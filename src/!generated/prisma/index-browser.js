@@ -168,6 +168,11 @@ exports.Prisma.AttrTypeScalarFieldEnum = {
   name: 'name'
 };
 
+exports.Prisma.TemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -191,7 +196,8 @@ exports.Prisma.ModelName = {
   KVSet: 'KVSet',
   KV: 'KV',
   Range: 'Range',
-  AttrType: 'AttrType'
+  AttrType: 'AttrType',
+  Template: 'Template'
 };
 
 /**

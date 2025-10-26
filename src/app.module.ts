@@ -10,11 +10,12 @@ import { ValueModule } from './value/value.module';
 import { ValueController } from './value/value.controller';
 import { EntityController } from './entity/entity.controller';
 import { AttributeController } from './attribute/attribute.controller';
+import { TemplateModule } from './template/template.module';
 
 
 
 @Module({
-  imports: [PrismaModule, EntityModule, AttributeModule, ValueModule, ],
+  imports: [PrismaModule, EntityModule, AttributeModule, ValueModule, TemplateModule, ],
   controllers: [AppController],
   providers: [AppService, providePrismaClientExceptionFilter({
       // Prisma Error Code: HTTP Status Response

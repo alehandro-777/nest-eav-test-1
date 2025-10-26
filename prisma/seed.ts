@@ -6,6 +6,29 @@ import { PrismaClient } from '../src/!generated/prisma'
 const prisma = new PrismaClient();
 
 async function main() {
+  
+  //  ----   TEMPLATES
+    const tm1 = await prisma.template.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      name: '/templates/template1.xltx',
+    },
+  });
+    const tm2 = await prisma.template.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      name: '/templates/template2.xltx',
+    },
+  });
+    const tm3 = await prisma.template.upsert({
+    where: { id: 3 },
+    update: {},
+    create: {
+      name: '/templates/template3.xltx',
+    },
+  });
 
   //  ----   RANGE TYPES
     const r1 = await prisma.range.upsert({

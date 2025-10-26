@@ -124,7 +124,7 @@ export class ValueService {
     return  this.prisma.value.findMany(
       {
         where:{
-          "entityId": { in: [1,2,3,4,5] },
+          "entityId": { in: [1,2,3,4,5,0,] },
           "attributeId": { in: [1,] },
           "ts": { gte: from, lt: to  }
         }, 

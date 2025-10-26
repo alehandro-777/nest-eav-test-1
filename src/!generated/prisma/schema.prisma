@@ -79,3 +79,8 @@ model AttrType {
   name       String
   attributes Attribute[]
 }
+
+model Template {
+  id   Int    @id @default(autoincrement())
+  name String
+}
