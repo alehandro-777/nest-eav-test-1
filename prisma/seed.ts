@@ -7,6 +7,24 @@ const prisma = new PrismaClient();
 
 async function main() {
   
+  //  ----   QUERYES
+    const q1 = await prisma.query.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      name: 'query1',
+      params: '{"o":[1,2,3,4,5], "p":[1,2,3]}',
+    },
+  });
+    const q2 = await prisma.query.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      name: 'query1',
+      params: '{"o":[1,2,3,4,5], "p":[1,2,3]}',
+    },
+  });
+
   //  ----   TEMPLATES
     const tm1 = await prisma.template.upsert({
     where: { id: 1 },

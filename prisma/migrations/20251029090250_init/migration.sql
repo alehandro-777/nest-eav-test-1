@@ -75,6 +75,15 @@ CREATE TABLE "public"."Template" (
     CONSTRAINT "Template_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "public"."Query" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "params" TEXT NOT NULL,
+
+    CONSTRAINT "Query_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Value_entityId_attributeId_ts_key" ON "public"."Value"("entityId", "attributeId", "ts");
 

@@ -53,6 +53,11 @@ export type AttrType = $Result.DefaultSelection<Prisma.$AttrTypePayload>
  * 
  */
 export type Template = $Result.DefaultSelection<Prisma.$TemplatePayload>
+/**
+ * Model Query
+ * 
+ */
+export type Query = $Result.DefaultSelection<Prisma.$QueryPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -251,6 +256,16 @@ export class PrismaClient<
     * ```
     */
   get template(): Prisma.TemplateDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.query`: Exposes CRUD operations for the **Query** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Queries
+    * const queries = await prisma.query.findMany()
+    * ```
+    */
+  get query(): Prisma.QueryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -698,7 +713,8 @@ export namespace Prisma {
     KV: 'KV',
     Range: 'Range',
     AttrType: 'AttrType',
-    Template: 'Template'
+    Template: 'Template',
+    Query: 'Query'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -717,7 +733,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "entity" | "attribute" | "value" | "kVSet" | "kV" | "range" | "attrType" | "template"
+      modelProps: "entity" | "attribute" | "value" | "kVSet" | "kV" | "range" | "attrType" | "template" | "query"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1313,6 +1329,80 @@ export namespace Prisma {
           }
         }
       }
+      Query: {
+        payload: Prisma.$QueryPayload<ExtArgs>
+        fields: Prisma.QueryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.QueryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.QueryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload>
+          }
+          findFirst: {
+            args: Prisma.QueryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.QueryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload>
+          }
+          findMany: {
+            args: Prisma.QueryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload>[]
+          }
+          create: {
+            args: Prisma.QueryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload>
+          }
+          createMany: {
+            args: Prisma.QueryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.QueryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload>[]
+          }
+          delete: {
+            args: Prisma.QueryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload>
+          }
+          update: {
+            args: Prisma.QueryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload>
+          }
+          deleteMany: {
+            args: Prisma.QueryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.QueryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.QueryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload>[]
+          }
+          upsert: {
+            args: Prisma.QueryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$QueryPayload>
+          }
+          aggregate: {
+            args: Prisma.QueryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateQuery>
+          }
+          groupBy: {
+            args: Prisma.QueryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<QueryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.QueryCountArgs<ExtArgs>
+            result: $Utils.Optional<QueryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1417,6 +1507,7 @@ export namespace Prisma {
     range?: RangeOmit
     attrType?: AttrTypeOmit
     template?: TemplateOmit
+    query?: QueryOmit
   }
 
   /* Types for Logging */
@@ -10399,6 +10490,1009 @@ export namespace Prisma {
 
 
   /**
+   * Model Query
+   */
+
+  export type AggregateQuery = {
+    _count: QueryCountAggregateOutputType | null
+    _avg: QueryAvgAggregateOutputType | null
+    _sum: QuerySumAggregateOutputType | null
+    _min: QueryMinAggregateOutputType | null
+    _max: QueryMaxAggregateOutputType | null
+  }
+
+  export type QueryAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type QuerySumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type QueryMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+    params: string | null
+  }
+
+  export type QueryMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+    params: string | null
+  }
+
+  export type QueryCountAggregateOutputType = {
+    id: number
+    name: number
+    params: number
+    _all: number
+  }
+
+
+  export type QueryAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type QuerySumAggregateInputType = {
+    id?: true
+  }
+
+  export type QueryMinAggregateInputType = {
+    id?: true
+    name?: true
+    params?: true
+  }
+
+  export type QueryMaxAggregateInputType = {
+    id?: true
+    name?: true
+    params?: true
+  }
+
+  export type QueryCountAggregateInputType = {
+    id?: true
+    name?: true
+    params?: true
+    _all?: true
+  }
+
+  export type QueryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Query to aggregate.
+     */
+    where?: QueryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Queries to fetch.
+     */
+    orderBy?: QueryOrderByWithRelationInput | QueryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: QueryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Queries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Queries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Queries
+    **/
+    _count?: true | QueryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: QueryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: QuerySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: QueryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: QueryMaxAggregateInputType
+  }
+
+  export type GetQueryAggregateType<T extends QueryAggregateArgs> = {
+        [P in keyof T & keyof AggregateQuery]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateQuery[P]>
+      : GetScalarType<T[P], AggregateQuery[P]>
+  }
+
+
+
+
+  export type QueryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: QueryWhereInput
+    orderBy?: QueryOrderByWithAggregationInput | QueryOrderByWithAggregationInput[]
+    by: QueryScalarFieldEnum[] | QueryScalarFieldEnum
+    having?: QueryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: QueryCountAggregateInputType | true
+    _avg?: QueryAvgAggregateInputType
+    _sum?: QuerySumAggregateInputType
+    _min?: QueryMinAggregateInputType
+    _max?: QueryMaxAggregateInputType
+  }
+
+  export type QueryGroupByOutputType = {
+    id: number
+    name: string
+    params: string
+    _count: QueryCountAggregateOutputType | null
+    _avg: QueryAvgAggregateOutputType | null
+    _sum: QuerySumAggregateOutputType | null
+    _min: QueryMinAggregateOutputType | null
+    _max: QueryMaxAggregateOutputType | null
+  }
+
+  type GetQueryGroupByPayload<T extends QueryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<QueryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof QueryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], QueryGroupByOutputType[P]>
+            : GetScalarType<T[P], QueryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type QuerySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    params?: boolean
+  }, ExtArgs["result"]["query"]>
+
+  export type QuerySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    params?: boolean
+  }, ExtArgs["result"]["query"]>
+
+  export type QuerySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    params?: boolean
+  }, ExtArgs["result"]["query"]>
+
+  export type QuerySelectScalar = {
+    id?: boolean
+    name?: boolean
+    params?: boolean
+  }
+
+  export type QueryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "params", ExtArgs["result"]["query"]>
+
+  export type $QueryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Query"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      name: string
+      params: string
+    }, ExtArgs["result"]["query"]>
+    composites: {}
+  }
+
+  type QueryGetPayload<S extends boolean | null | undefined | QueryDefaultArgs> = $Result.GetResult<Prisma.$QueryPayload, S>
+
+  type QueryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<QueryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: QueryCountAggregateInputType | true
+    }
+
+  export interface QueryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Query'], meta: { name: 'Query' } }
+    /**
+     * Find zero or one Query that matches the filter.
+     * @param {QueryFindUniqueArgs} args - Arguments to find a Query
+     * @example
+     * // Get one Query
+     * const query = await prisma.query.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends QueryFindUniqueArgs>(args: SelectSubset<T, QueryFindUniqueArgs<ExtArgs>>): Prisma__QueryClient<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Query that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {QueryFindUniqueOrThrowArgs} args - Arguments to find a Query
+     * @example
+     * // Get one Query
+     * const query = await prisma.query.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends QueryFindUniqueOrThrowArgs>(args: SelectSubset<T, QueryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__QueryClient<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Query that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {QueryFindFirstArgs} args - Arguments to find a Query
+     * @example
+     * // Get one Query
+     * const query = await prisma.query.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends QueryFindFirstArgs>(args?: SelectSubset<T, QueryFindFirstArgs<ExtArgs>>): Prisma__QueryClient<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Query that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {QueryFindFirstOrThrowArgs} args - Arguments to find a Query
+     * @example
+     * // Get one Query
+     * const query = await prisma.query.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends QueryFindFirstOrThrowArgs>(args?: SelectSubset<T, QueryFindFirstOrThrowArgs<ExtArgs>>): Prisma__QueryClient<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Queries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {QueryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Queries
+     * const queries = await prisma.query.findMany()
+     * 
+     * // Get first 10 Queries
+     * const queries = await prisma.query.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const queryWithIdOnly = await prisma.query.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends QueryFindManyArgs>(args?: SelectSubset<T, QueryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Query.
+     * @param {QueryCreateArgs} args - Arguments to create a Query.
+     * @example
+     * // Create one Query
+     * const Query = await prisma.query.create({
+     *   data: {
+     *     // ... data to create a Query
+     *   }
+     * })
+     * 
+     */
+    create<T extends QueryCreateArgs>(args: SelectSubset<T, QueryCreateArgs<ExtArgs>>): Prisma__QueryClient<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Queries.
+     * @param {QueryCreateManyArgs} args - Arguments to create many Queries.
+     * @example
+     * // Create many Queries
+     * const query = await prisma.query.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends QueryCreateManyArgs>(args?: SelectSubset<T, QueryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Queries and returns the data saved in the database.
+     * @param {QueryCreateManyAndReturnArgs} args - Arguments to create many Queries.
+     * @example
+     * // Create many Queries
+     * const query = await prisma.query.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Queries and only return the `id`
+     * const queryWithIdOnly = await prisma.query.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends QueryCreateManyAndReturnArgs>(args?: SelectSubset<T, QueryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Query.
+     * @param {QueryDeleteArgs} args - Arguments to delete one Query.
+     * @example
+     * // Delete one Query
+     * const Query = await prisma.query.delete({
+     *   where: {
+     *     // ... filter to delete one Query
+     *   }
+     * })
+     * 
+     */
+    delete<T extends QueryDeleteArgs>(args: SelectSubset<T, QueryDeleteArgs<ExtArgs>>): Prisma__QueryClient<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Query.
+     * @param {QueryUpdateArgs} args - Arguments to update one Query.
+     * @example
+     * // Update one Query
+     * const query = await prisma.query.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends QueryUpdateArgs>(args: SelectSubset<T, QueryUpdateArgs<ExtArgs>>): Prisma__QueryClient<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Queries.
+     * @param {QueryDeleteManyArgs} args - Arguments to filter Queries to delete.
+     * @example
+     * // Delete a few Queries
+     * const { count } = await prisma.query.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends QueryDeleteManyArgs>(args?: SelectSubset<T, QueryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Queries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {QueryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Queries
+     * const query = await prisma.query.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends QueryUpdateManyArgs>(args: SelectSubset<T, QueryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Queries and returns the data updated in the database.
+     * @param {QueryUpdateManyAndReturnArgs} args - Arguments to update many Queries.
+     * @example
+     * // Update many Queries
+     * const query = await prisma.query.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Queries and only return the `id`
+     * const queryWithIdOnly = await prisma.query.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends QueryUpdateManyAndReturnArgs>(args: SelectSubset<T, QueryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Query.
+     * @param {QueryUpsertArgs} args - Arguments to update or create a Query.
+     * @example
+     * // Update or create a Query
+     * const query = await prisma.query.upsert({
+     *   create: {
+     *     // ... data to create a Query
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Query we want to update
+     *   }
+     * })
+     */
+    upsert<T extends QueryUpsertArgs>(args: SelectSubset<T, QueryUpsertArgs<ExtArgs>>): Prisma__QueryClient<$Result.GetResult<Prisma.$QueryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Queries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {QueryCountArgs} args - Arguments to filter Queries to count.
+     * @example
+     * // Count the number of Queries
+     * const count = await prisma.query.count({
+     *   where: {
+     *     // ... the filter for the Queries we want to count
+     *   }
+     * })
+    **/
+    count<T extends QueryCountArgs>(
+      args?: Subset<T, QueryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], QueryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Query.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {QueryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends QueryAggregateArgs>(args: Subset<T, QueryAggregateArgs>): Prisma.PrismaPromise<GetQueryAggregateType<T>>
+
+    /**
+     * Group by Query.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {QueryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends QueryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: QueryGroupByArgs['orderBy'] }
+        : { orderBy?: QueryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, QueryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetQueryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Query model
+   */
+  readonly fields: QueryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Query.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__QueryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Query model
+   */
+  interface QueryFieldRefs {
+    readonly id: FieldRef<"Query", 'Int'>
+    readonly name: FieldRef<"Query", 'String'>
+    readonly params: FieldRef<"Query", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Query findUnique
+   */
+  export type QueryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * Filter, which Query to fetch.
+     */
+    where: QueryWhereUniqueInput
+  }
+
+  /**
+   * Query findUniqueOrThrow
+   */
+  export type QueryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * Filter, which Query to fetch.
+     */
+    where: QueryWhereUniqueInput
+  }
+
+  /**
+   * Query findFirst
+   */
+  export type QueryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * Filter, which Query to fetch.
+     */
+    where?: QueryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Queries to fetch.
+     */
+    orderBy?: QueryOrderByWithRelationInput | QueryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Queries.
+     */
+    cursor?: QueryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Queries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Queries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Queries.
+     */
+    distinct?: QueryScalarFieldEnum | QueryScalarFieldEnum[]
+  }
+
+  /**
+   * Query findFirstOrThrow
+   */
+  export type QueryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * Filter, which Query to fetch.
+     */
+    where?: QueryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Queries to fetch.
+     */
+    orderBy?: QueryOrderByWithRelationInput | QueryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Queries.
+     */
+    cursor?: QueryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Queries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Queries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Queries.
+     */
+    distinct?: QueryScalarFieldEnum | QueryScalarFieldEnum[]
+  }
+
+  /**
+   * Query findMany
+   */
+  export type QueryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * Filter, which Queries to fetch.
+     */
+    where?: QueryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Queries to fetch.
+     */
+    orderBy?: QueryOrderByWithRelationInput | QueryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Queries.
+     */
+    cursor?: QueryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Queries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Queries.
+     */
+    skip?: number
+    distinct?: QueryScalarFieldEnum | QueryScalarFieldEnum[]
+  }
+
+  /**
+   * Query create
+   */
+  export type QueryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Query.
+     */
+    data: XOR<QueryCreateInput, QueryUncheckedCreateInput>
+  }
+
+  /**
+   * Query createMany
+   */
+  export type QueryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Queries.
+     */
+    data: QueryCreateManyInput | QueryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Query createManyAndReturn
+   */
+  export type QueryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * The data used to create many Queries.
+     */
+    data: QueryCreateManyInput | QueryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Query update
+   */
+  export type QueryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Query.
+     */
+    data: XOR<QueryUpdateInput, QueryUncheckedUpdateInput>
+    /**
+     * Choose, which Query to update.
+     */
+    where: QueryWhereUniqueInput
+  }
+
+  /**
+   * Query updateMany
+   */
+  export type QueryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Queries.
+     */
+    data: XOR<QueryUpdateManyMutationInput, QueryUncheckedUpdateManyInput>
+    /**
+     * Filter which Queries to update
+     */
+    where?: QueryWhereInput
+    /**
+     * Limit how many Queries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Query updateManyAndReturn
+   */
+  export type QueryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * The data used to update Queries.
+     */
+    data: XOR<QueryUpdateManyMutationInput, QueryUncheckedUpdateManyInput>
+    /**
+     * Filter which Queries to update
+     */
+    where?: QueryWhereInput
+    /**
+     * Limit how many Queries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Query upsert
+   */
+  export type QueryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Query to update in case it exists.
+     */
+    where: QueryWhereUniqueInput
+    /**
+     * In case the Query found by the `where` argument doesn't exist, create a new Query with this data.
+     */
+    create: XOR<QueryCreateInput, QueryUncheckedCreateInput>
+    /**
+     * In case the Query was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<QueryUpdateInput, QueryUncheckedUpdateInput>
+  }
+
+  /**
+   * Query delete
+   */
+  export type QueryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+    /**
+     * Filter which Query to delete.
+     */
+    where: QueryWhereUniqueInput
+  }
+
+  /**
+   * Query deleteMany
+   */
+  export type QueryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Queries to delete
+     */
+    where?: QueryWhereInput
+    /**
+     * Limit how many Queries to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Query without action
+   */
+  export type QueryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Query
+     */
+    select?: QuerySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Query
+     */
+    omit?: QueryOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -10487,6 +11581,15 @@ export namespace Prisma {
   };
 
   export type TemplateScalarFieldEnum = (typeof TemplateScalarFieldEnum)[keyof typeof TemplateScalarFieldEnum]
+
+
+  export const QueryScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    params: 'params'
+  };
+
+  export type QueryScalarFieldEnum = (typeof QueryScalarFieldEnum)[keyof typeof QueryScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -10999,6 +12102,50 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Template"> | string
   }
 
+  export type QueryWhereInput = {
+    AND?: QueryWhereInput | QueryWhereInput[]
+    OR?: QueryWhereInput[]
+    NOT?: QueryWhereInput | QueryWhereInput[]
+    id?: IntFilter<"Query"> | number
+    name?: StringFilter<"Query"> | string
+    params?: StringFilter<"Query"> | string
+  }
+
+  export type QueryOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    params?: SortOrder
+  }
+
+  export type QueryWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: QueryWhereInput | QueryWhereInput[]
+    OR?: QueryWhereInput[]
+    NOT?: QueryWhereInput | QueryWhereInput[]
+    name?: StringFilter<"Query"> | string
+    params?: StringFilter<"Query"> | string
+  }, "id">
+
+  export type QueryOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    params?: SortOrder
+    _count?: QueryCountOrderByAggregateInput
+    _avg?: QueryAvgOrderByAggregateInput
+    _max?: QueryMaxOrderByAggregateInput
+    _min?: QueryMinOrderByAggregateInput
+    _sum?: QuerySumOrderByAggregateInput
+  }
+
+  export type QueryScalarWhereWithAggregatesInput = {
+    AND?: QueryScalarWhereWithAggregatesInput | QueryScalarWhereWithAggregatesInput[]
+    OR?: QueryScalarWhereWithAggregatesInput[]
+    NOT?: QueryScalarWhereWithAggregatesInput | QueryScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Query"> | number
+    name?: StringWithAggregatesFilter<"Query"> | string
+    params?: StringWithAggregatesFilter<"Query"> | string
+  }
+
   export type EntityCreateInput = {
     name: string
     createdAt?: Date | string
@@ -11362,6 +12509,45 @@ export namespace Prisma {
   export type TemplateUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type QueryCreateInput = {
+    name: string
+    params: string
+  }
+
+  export type QueryUncheckedCreateInput = {
+    id?: number
+    name: string
+    params: string
+  }
+
+  export type QueryUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    params?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type QueryUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    params?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type QueryCreateManyInput = {
+    id?: number
+    name: string
+    params: string
+  }
+
+  export type QueryUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    params?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type QueryUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    params?: StringFieldUpdateOperationsInput | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -11857,6 +13043,32 @@ export namespace Prisma {
   }
 
   export type TemplateSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type QueryCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    params?: SortOrder
+  }
+
+  export type QueryAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type QueryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    params?: SortOrder
+  }
+
+  export type QueryMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    params?: SortOrder
+  }
+
+  export type QuerySumOrderByAggregateInput = {
     id?: SortOrder
   }
 

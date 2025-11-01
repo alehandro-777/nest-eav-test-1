@@ -3,7 +3,7 @@ import { CreateValueDto } from './dto/create-value.dto';
 import { UpdateValueDto } from './dto/update-value.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-
+import {ValueE} from './entities/value.entity';
 
 @Injectable()
 export class ValueService {
@@ -88,15 +88,27 @@ export class ValueService {
 
 
   //----------- TEST
-    async test(ts:string, from:string, to:string, ) {
+    async test(ts:string, from:string, to:string, o:string, p:string) {
 
     let djs = new Date(ts);
     let _from = new Date(from);
-    let _to = new Date(to);    
+    let _to = new Date(to);
+    
+    let ent = [];
+    let att = [];
 
-    console.log(djs, _from, _to)
+    try {
+      ent = JSON.parse(o);
+      att = JSON.parse(p);
+    } catch (e) {
+      console.error(e);
+    }
 
-    let res = await this.query3(_from, _to);
+
+
+    console.log(djs, _from, _to, ent, att,  )
+
+    let res = await this.query3(_from, _to, ent, att);
 
     return this.transform1(res);  
   }
@@ -119,13 +131,13 @@ export class ValueService {
         _count: { _all: true },    
     });
   }
-  //filter +range +  by IN + select fields
-  query3(from:Date, to:Date,)  {
+  //filter +range +  by IN entity-attr   + select fields
+  query3(from:Date, to:Date, ent:number[], att:number[])  {
     return  this.prisma.value.findMany(
       {
         where:{
-          "entityId": { in: [1,2,3,4,5,0,] },
-          "attributeId": { in: [1,] },
+          "entityId": { in: ent },
+          "attributeId": { in: att },
           "ts": { gte: from, lt: to  }
         }, 
         select: {
@@ -187,14 +199,22 @@ export class ValueService {
         },
       });
   } 
+
+  
   // преобразование  в строки, группируем по времени: MAP -> key - ts, предполагаем, объект имеет одно значение атрибута
   transform1(eav: any[]): Map<string, any>  {
     return eav.reduce((map, currValue, currIndex) => {
-      let key = currValue.ts.toISOString();
-      if (!map.has(key)) map.set(key, { }); //начало новой строки
-      let editableObject = map.get(key);
-      editableObject[currValue.entityId] = currValue;           
+      
+      let key = currValue.ts.toISOString(); //ключ строки
+
+      if (!map.has(key)) map.set(key, { }); //строки еще нет - начать с новой строки
+
+      let editableObject = map.get(key);  //редактируемый объект
+      let objKey = currValue.entityId +"_"+ currValue.attributeId;  //key внутри строки
+      editableObject[objKey] = currValue; 
+
       return map;
     }, new Map<string, any>());
   }
+
 }

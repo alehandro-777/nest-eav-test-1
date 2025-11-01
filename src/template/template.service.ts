@@ -39,6 +39,8 @@ export class TemplateService {
 
     async test() {
 
+    const json = await this.processQuery(""); // test test data
+
     const excelTemplatePath = path.resolve(__dirname, '../json/template1.xlsx');  //template
     const outExcelPath = path.resolve(__dirname, '../json/data1.xlsx');         //output xlsx
 
@@ -46,24 +48,9 @@ export class TemplateService {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(excelTemplatePath);
     const worksheet = workbook.worksheets[0];
-
-    for (let rowNumber = 1; rowNumber <= worksheet.rowCount; rowNumber++) {
-      const row = worksheet.getRow(rowNumber);
-      for (let colNumber = 1; colNumber <= row.cellCount; colNumber++) {
-
-        const cell = row.getCell(colNumber);
-        //console.log('Cell ' + colNumber + ' = ' + cell.value);
-        
-        //  query cell == json object !
-        if(cell && typeof cell.value == "string" && cell.value.startsWith("{")) {
-          const cmd = cell.value;
-          cell.value = "";  //clear cmd
-          const json = await this.processQuery(cmd);
-          await this.processJson(worksheet, rowNumber, colNumber, json);
-        }
-      }
-    }
     
+    this.processJson(worksheet, json);
+   
     await workbook.xlsx.writeFile(outExcelPath);
 
     return "OK";
@@ -71,36 +58,89 @@ export class TemplateService {
 
   //temp temp 
   async processQuery(json:  string) {
-    const query = JSON.parse(json); //parse query
-    const testData1Map = path.resolve(__dirname, '../json/data1.json');
+    const testData1Map = path.resolve(__dirname, '../json/data2.json');
     const data = JSON.parse(await readFile(testData1Map, 'utf8'));
     return data;
   }
 
   //insert json - excel table
-  async processJson(sheet: ExcelJS.Worksheet, row:number, col:number, json:string) {
-    
-    let i =0;
+  processJson(sheet: ExcelJS.Worksheet, json: string) {
+    const startSym = "#";
+    const ds0: Map<string,any> = new Map(Object.entries(json)); //temp test
+    const dsKeys = Array.from(ds0.keys()); // массив ключей
 
-    const map1 = new Map(Object.entries(json));
+    const rowCount = ds0.size;  //dataset row count,  insert-1 ?
 
-    const rowCount = map1.size -2;  //
+    for (let rowId = 1; rowId <= sheet.rowCount; rowId++) {
+      const row: ExcelJS.Row = sheet.getRow(rowId);
+  
+      //1 проверить нужно ли размножить строку ? если да - размножить
+      if(this.testIsMultiRow(row))  {
+        this.insertEmptyRows(sheet, rowId, rowCount);
+        this.shiftFormulasAfterInsert(sheet, rowId, rowCount);  //test temp
+      }
 
-    this.insertEmptyRows(sheet, row+1, rowCount);// ?
+      //2 привязать данные строки
+      for (let colId = 1; colId <= row.cellCount; colId++) {
+        const cell = row.getCell(colId);
 
-     for (const [key, value] of map1) {
-      //console.log(i,key)//, value)
-      sheet.getCell(row+i, 1).value = key;
-      this.setRowValues(sheet, row+i, col, value);
-      i++;
+        //console.log('Cell ' + colNumber + ' = ' + cell.value);        
+        //cell format: #0.*.key,...	#0.*.1_1
+        if(cell && typeof cell.value == "string" && cell.value.startsWith(startSym)) {
+          //{ds, id, key} 
+          let bind = this.parseCellBinding(cell.value);
+
+          if(bind.key == "key")  {
+            row.getCell(colId).value  = dsKeys[+bind.id]; //test temp
+
+          } else {
+
+            let fieldKey = bind.key;
+            let dsRow = ds0.get(dsKeys[+bind.id]);
+
+            if(dsRow && dsRow[fieldKey]) {
+
+              let newVal = dsRow[fieldKey].numberVal; //temp
+
+              row.getCell(colId).value  = newVal; //dsKeys[i]
+            } else {
+              row.getCell(colId).value  = "";     //dsKeys[i]
+            }
+
+          }
+        }
+      }
+
     }
-    //sheet.commit()
-    this.shiftFormulasAfterInsert(sheet,row+1, rowCount); // 23
+
+    //
   }
 
-  setRowValues(sheet: ExcelJS.Worksheet, row:number, col:number, data:any) {
-    for (let i = 1; i < 6; i++) {
-      sheet.getCell(row, col+i).value = data[i].numberVal;
+  //#0.*.key   replace rowId * with real dataset rowId
+  replaceDsRowId(row: ExcelJS.Row, dsRowId: number) {
+    for (let colId = 1; colId <= row.cellCount; colId++) {
+      const cell = row.getCell(colId);
+      if(cell && typeof cell.value == "string") {
+        cell.value = cell.value.replace("*", dsRowId.toString());
+        //console.log(dsRowId, cell.value)
+      }
+    }
+  }
+  //#0.*.key
+  testIsMultiRow(row: ExcelJS.Row) {
+    for (let colId = 1; colId <= row.cellCount; colId++) {
+      const cell = row.getCell(colId);
+      
+      if(cell && typeof cell.value == "string" && cell.value.includes("*")) {
+        return true;
+      }
+      return false;
+    }
+  }
+
+  setRowValues(row: ExcelJS.Row, data:any) {
+    for (let i = 1; i <= row.cellCount; i++) {
+      //row.getCell(col+i).value = data[i].numberVal;
       //console.log(row, col+i, sheet.getCell(row, col+i).value)
     }
     
@@ -108,13 +148,18 @@ export class TemplateService {
 
   //insert + copy styles
   insertEmptyRows(sheet: ExcelJS.Worksheet, pos: number, num: number) {
-    for (let id = 0; id < num; id++) {
+    for (let id = 0; id < num - 1; id++) {      //нужно вставить на 1 меньше т.к. одна уже есть !
         const emptyRow = sheet.getRow(pos);   //она станет пустой после вставки
         const oldRow = sheet.getRow(pos+1);  //сюда сдвигается старая строка
         // Вставляем пустую строку
         sheet.spliceRows(pos, 0, []);
-        this.copyValueAndRowStyle( oldRow, emptyRow);       
+        this.copyValueAndRowStyle( oldRow, emptyRow); 
+        //в старой строке подставить реальный номер строки датасета, но 1 самый последний!
+        this.replaceDsRowId(oldRow, num-id-1);
     }
+    //самая верхняя строка с 0 индексом
+    const topRow = sheet.getRow(pos);
+    this.replaceDsRowId(topRow, 0);
   }
 
   copyValueAndRowStyle(sourceRow: ExcelJS.Row, targetRow: ExcelJS.Row) {
@@ -143,20 +188,20 @@ export class TemplateService {
       for (let colIndex = 1; colIndex <= r.cellCount; colIndex++) {
         const cell = r.getCell(colIndex);
         
-        console.log("shift v:"+cell.value, "f:",cell.value); // excel  englisch formulas start mit '='
+        //console.log("shift v:"+cell.value, "f:",cell.value); // excel  englisch formulas start mit '='
 
         if (cell && cell.value && typeof cell.value === "string" && cell.value.startsWith("=")) {
           //replace regex A1...-> A100
           const newFormula = cell.value.replace(rangeRegex, ref => {
             const { col, row } = this.parseCellRef(ref);
-            if (row >= insertIndex) {
+            if (row > insertIndex) {
               // Сдвигаем строки, но не трогаем колонки
-              return ref.replace(/\d+/, (row + count).toString());
+              return ref.replace(/\d+/, (row + count -2).toString());
             }
             let s = ref;
             return s;
           });
-          //console.log(newFormula)//  remove '='
+          console.log(newFormula)//  remove '='
           cell.value = {formula: newFormula.substring(1), };
         }
       }
@@ -175,6 +220,18 @@ export class TemplateService {
     return match ? { col: match[1], row: parseInt(match[2], 10) } : { col: "", row: 0 };
   }
 
+  //#0.*.key
+  parseCellBinding(bind: string)  {
+    const delim = ".";
+
+    let parts = bind.split(delim);
+
+    return {
+            ds: parts[0].substring(1), 
+            id:  parts[1],
+            key: parts[2],
+    }
+  }
 
 }
 

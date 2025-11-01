@@ -84,3 +84,9 @@ model Template {
   id   Int    @id @default(autoincrement())
   name String
 }
+
+model Query {
+  id     Int    @id @default(autoincrement())
+  name   String
+  params String
+}

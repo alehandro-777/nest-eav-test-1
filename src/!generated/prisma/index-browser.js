@@ -173,6 +173,12 @@ exports.Prisma.TemplateScalarFieldEnum = {
   name: 'name'
 };
 
+exports.Prisma.QueryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  params: 'params'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -197,7 +203,8 @@ exports.Prisma.ModelName = {
   KV: 'KV',
   Range: 'Range',
   AttrType: 'AttrType',
-  Template: 'Template'
+  Template: 'Template',
+  Query: 'Query'
 };
 
 /**

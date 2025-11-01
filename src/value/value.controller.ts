@@ -35,7 +35,7 @@ export class ValueController {
 
   //--------------------------------------
   @Get("test")
-  test(@Query('ts') ts:string, @Query('from') from:string, @Query('to') to:string, ) {
-    return this.valueService.test(ts, from, to);
+  test(@Query('ts') ts:string, @Query('from') from:string, @Query('to') to:string, @Query('o') o:string,@Query('p') p:string,) {
+    return this.valueService.test(ts, from, to, o, p, );
   }
 }
