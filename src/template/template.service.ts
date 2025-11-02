@@ -41,9 +41,8 @@ export class TemplateService {
 
     const json = await this.processQuery(""); // test test data
 
-    const excelTemplatePath = path.resolve(__dirname, '../json/template1.xlsx');  //template
+    const excelTemplatePath = path.resolve(__dirname, '../json/template2.xlsx');  //template
     const outExcelPath = path.resolve(__dirname, '../json/data1.xlsx');         //output xlsx
-
 
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(excelTemplatePath);
@@ -60,22 +59,23 @@ export class TemplateService {
   async processQuery(json:  string) {
     const testData1Map = path.resolve(__dirname, '../json/data2.json');
     const data = JSON.parse(await readFile(testData1Map, 'utf8'));
-    return data;
+    const ds0: Map<string, any> = new Map(Object.entries(data)); //temp test
+
+    return [ds0];
   }
 
   //insert json - excel table
-  processJson(sheet: ExcelJS.Worksheet, json: string) {
+  processJson(sheet: ExcelJS.Worksheet, ds: Map<string, any>[]) {
     const startSym = "#";
-    const ds0: Map<string,any> = new Map(Object.entries(json)); //temp test
-    const dsKeys = Array.from(ds0.keys()); // массив ключей
-
-    const rowCount = ds0.size;  //dataset row count,  insert-1 ?
-
+  
     for (let rowId = 1; rowId <= sheet.rowCount; rowId++) {
+      
       const row: ExcelJS.Row = sheet.getRow(rowId);
   
       //1 проверить нужно ли размножить строку ? если да - размножить
-      if(this.testIsMultiRow(row))  {
+      let bind = this.testIsMultiRow(row);
+      if(bind)  {
+        let rowCount = this.getRowNumberByIndex(ds, +bind.ds)
         this.insertEmptyRows(sheet, rowId, rowCount);
         this.shiftFormulasAfterInsert(sheet, rowId, rowCount);  //test temp
       }
@@ -89,18 +89,17 @@ export class TemplateService {
         if(cell && typeof cell.value == "string" && cell.value.startsWith(startSym)) {
           //{ds, id, key} 
           let bind = this.parseCellBinding(cell.value);
+          let dsKeyRow = this.getEntryByIndex(ds, +bind.ds, +bind.id);//map Entry [key, value]
 
           if(bind.key == "key")  {
-            row.getCell(colId).value  = dsKeys[+bind.id]; //test temp
-
+            row.getCell(colId).value  = dsKeyRow != undefined ? dsKeyRow[0] : ""; //display "key" test temp
           } else {
 
             let fieldKey = bind.key;
-            let dsRow = ds0.get(dsKeys[+bind.id]);
 
-            if(dsRow && dsRow[fieldKey]) {
+            if(dsKeyRow && dsKeyRow[1] && dsKeyRow[1][fieldKey]) {
 
-              let newVal = dsRow[fieldKey].numberVal; //temp
+              let newVal = dsKeyRow[1][fieldKey].numberVal; //temp  numberVal  !
 
               row.getCell(colId).value  = newVal; //dsKeys[i]
             } else {
@@ -116,6 +115,21 @@ export class TemplateService {
     //
   }
 
+  getEntryByIndex(arr: Map<string, any>[], dsId: number, rowId: number) {
+    const map0 = arr[dsId];  //
+    let i = 0;
+    for (const [key, value] of map0) {
+      if (i++ === rowId) return [key, value];
+    }
+    return undefined;
+  }
+  
+  getRowNumberByIndex(arr: Map<string, any>[], dsId: number) {
+    const rowCount = arr[dsId].size;  //
+    return rowCount;
+  }
+
+
   //#0.*.key   replace rowId * with real dataset rowId
   replaceDsRowId(row: ExcelJS.Row, dsRowId: number) {
     for (let colId = 1; colId <= row.cellCount; colId++) {
@@ -129,12 +143,12 @@ export class TemplateService {
   //#0.*.key
   testIsMultiRow(row: ExcelJS.Row) {
     for (let colId = 1; colId <= row.cellCount; colId++) {
-      const cell = row.getCell(colId);
-      
+      const cell = row.getCell(colId);  
       if(cell && typeof cell.value == "string" && cell.value.includes("*")) {
-        return true;
+        let bind = this.parseCellBinding(cell.value);
+        return bind;
       }
-      return false;
+      return null;
     }
   }
 
