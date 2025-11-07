@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res } from '@nestjs/common';
 import { QueryService } from './query.service';
 import { CreateQueryDto } from './dto/create-query.dto';
 import { UpdateQueryDto } from './dto/update-query.dto';
+
 
 @Controller('query')
 export class QueryController {
@@ -39,5 +40,7 @@ export class QueryController {
         @Query('to') to:string, @Query('o') o:string,@Query('p') p:string, ) {
     return this.queryService.exec(id, ts, from, to, o, p, );
   }
+
+
 
 }

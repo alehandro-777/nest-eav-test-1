@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res } from '@nestjs/common';
 import { TemplateService } from './template.service';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
+import type { Response } from 'express';
 
 @Controller('template')
 export class TemplateController {
@@ -40,4 +41,21 @@ export class TemplateController {
     return this.templateService.exec(ids, ts, from, to, o, p, );
   }
 
+  @Get('download/:id')
+  download( @Param('id') id: string, @Res() res: Response ) {
+
+    let f = this.templateService.download(+id);
+    
+    res.setHeader("Content-Type", 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader("Content-Length", f.stat.size);
+    res.setHeader("Content-Disposition", 'attachment; filename="template1.xlsx"');
+
+    f.readStream.pipe(res);
+
+    f.readStream.on('error', (err) => {
+      console.error(err);
+      res.status(500).end();
+    });
+
+  }
 }

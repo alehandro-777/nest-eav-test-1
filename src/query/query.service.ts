@@ -7,6 +7,7 @@ import path from 'path';
 import { Prisma,  } from 'src/!generated/prisma';
 import { Query } from 'src/!generated/prisma';
 
+
 @Injectable()
 export class QueryService {
   
@@ -25,12 +26,18 @@ export class QueryService {
   }
 
   update(id: number, updateQueryDto: UpdateQueryDto) {
-    return `This action updates a #${id} query`;
+        return this.prisma.query.update(
+      { 
+        where:{ id:id },
+        data: updateQueryDto,
+      });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} query`;
+    return this.prisma.query.delete({ where:{id:id} });
   }
+
+
 
   //----------- TEST
   async exec(queryId:string, ts:string, from:string, to:string, o:string, p:string) {

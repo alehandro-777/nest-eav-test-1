@@ -3,6 +3,7 @@ import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { QueryService } from '../query/query.service';
+import fs from "fs";
 
 import { readFile } from 'fs/promises';
 import * as path from 'path';
@@ -37,6 +38,16 @@ export class TemplateService {
   remove(id: number) {
     return this.prisma.template.delete({ where:{id:id} });
   }
+
+  download(id: number) {
+
+    const filePath = path.resolve(__dirname, '../json/template1.xlsx'); //temp
+    const stat = fs.statSync(filePath);
+    const readStream = fs.createReadStream(filePath);
+
+    return {readStream, stat, name:"template1.xlsx"};
+  }
+
   //--------------------------------------------------------------------
 
   async exec(queryIds:string, ts:string, from:string, to:string, o:string, p:string) {
