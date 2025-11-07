@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { TemplateService } from './template.service';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
@@ -32,9 +32,12 @@ export class TemplateController {
     return this.templateService.remove(+id);
   }
 
-  @Get('test')
-  test() {
-    return this.templateService.test();
+  @Get('exec')
+  test( @Query('ids') ids: string, 
+        @Query('ts') ts: string, 
+        @Query('from') from:string, 
+        @Query('to') to:string, @Query('o') o:string,@Query('p') p:string, ) {
+    return this.templateService.exec(ids, ts, from, to, o, p, );
   }
 
 }

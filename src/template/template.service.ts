@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { QueryService } from '../query/query.service';
+
 import { readFile } from 'fs/promises';
 import * as path from 'path';
 import * as ExcelJS from 'exceljs';
@@ -10,7 +12,7 @@ import * as ExcelJS from 'exceljs';
 @Injectable()
 export class TemplateService {
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private query: QueryService) {}
 
   create(createTemplateDto: CreateTemplateDto) {
     return this.prisma.template.create({data:createTemplateDto})
@@ -37,9 +39,9 @@ export class TemplateService {
   }
   //--------------------------------------------------------------------
 
-    async test() {
+  async exec(queryIds:string, ts:string, from:string, to:string, o:string, p:string) {
 
-    const json = await this.processQuery(""); // test test data
+    const json = await this.processQuery(queryIds, ts, from, to, o, p); // test test data
 
     const excelTemplatePath = path.resolve(__dirname, '../json/template2.xlsx');  //template
     const outExcelPath = path.resolve(__dirname, '../json/data1.xlsx');         //output xlsx
@@ -56,12 +58,25 @@ export class TemplateService {
   }
 
   //temp temp 
-  async processQuery(json:  string) {
-    const testData1Map = path.resolve(__dirname, '../json/data2.json');
-    const data = JSON.parse(await readFile(testData1Map, 'utf8'));
-    const ds0: Map<string, any> = new Map(Object.entries(data)); //temp test
+  async processQuery(idsArr:string, ts:string, from:string, to:string, o:string, p:string) {
+    let ids = [];
+    let result: Map<string,any>[] = [];
 
-    return [ds0];
+    try {
+      ids = JSON.parse(idsArr);
+    } catch (e) {
+      console.error(e);
+    }
+
+    console.log(ids  )
+
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      let data = await this.query.exec(id, ts, from, to, o, p);
+      //result.push(data)     
+    }
+
+    return result;
   }
 
   //insert json - excel table

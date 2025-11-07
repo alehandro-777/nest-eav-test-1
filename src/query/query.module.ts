@@ -7,5 +7,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
   controllers: [QueryController],
   providers: [QueryService],
   imports: [PrismaModule],
+  exports:[QueryService]
 })
 export class QueryModule {}

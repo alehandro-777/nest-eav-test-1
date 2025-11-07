@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { QueryService } from './query.service';
 import { CreateQueryDto } from './dto/create-query.dto';
 import { UpdateQueryDto } from './dto/update-query.dto';
@@ -31,5 +31,13 @@ export class QueryController {
   remove(@Param('id') id: string) {
     return this.queryService.remove(+id);
   }
-  
+
+  @Get('exec/:id')
+  exec( @Param('id') id: string, 
+        @Query('ts') ts: string, 
+        @Query('from') from:string, 
+        @Query('to') to:string, @Query('o') o:string,@Query('p') p:string, ) {
+    return this.queryService.exec(id, ts, from, to, o, p, );
+  }
+
 }
