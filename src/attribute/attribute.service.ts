@@ -12,7 +12,7 @@ export class AttributeService {
   }
 
   findAll() {
-    return this.prisma.attribute.findMany({include:{ kVSet:{include:{values:true}}, range:true }});
+    return this.prisma.attribute.findMany({ include:{ kVSet:{include:{values:true}}, range:true }});
   }
 
   findOne(id: number) {

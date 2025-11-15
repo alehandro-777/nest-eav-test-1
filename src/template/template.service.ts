@@ -8,6 +8,7 @@ import fs from "fs";
 import { readFile } from 'fs/promises';
 import * as path from 'path';
 import * as ExcelJS from 'exceljs';
+import { startWith } from 'rxjs';
 
 
 @Injectable()
@@ -54,7 +55,7 @@ export class TemplateService {
 
     const json = await this.processQuery(queryIds, ts, from, to, o, p); // test test data
 
-    const excelTemplatePath = path.resolve(__dirname, '../json/template2.xlsx');  //template
+    const excelTemplatePath = path.resolve(__dirname, '../json/template1.xlsx');  //template
     const outExcelPath = path.resolve(__dirname, '../json/data1.xlsx');         //output xlsx
 
     const workbook = new ExcelJS.Workbook();
@@ -70,6 +71,7 @@ export class TemplateService {
 
   //temp temp 
   async processQuery(idsArr:string, ts:string, from:string, to:string, o:string, p:string) {
+  /*
     let ids = [];
     let result: Map<string,any>[] = [];
 
@@ -88,6 +90,13 @@ export class TemplateService {
     }
 
     return result;
+*/
+    // TEST TEST
+    const testData1Map = path.resolve(__dirname, '../json/data2.json');
+    const data = JSON.parse(await readFile(testData1Map, 'utf8'));
+    const ds0: Map<string, any> = new Map(Object.entries(data)); //temp test
+
+    return [ds0, ds0];  //test test
   }
 
   //insert json - excel table
@@ -97,48 +106,77 @@ export class TemplateService {
     for (let rowId = 1; rowId <= sheet.rowCount; rowId++) {
       
       const row: ExcelJS.Row = sheet.getRow(rowId);
-  
-      //1 проверить нужно ли размножить строку ? если да - размножить
-      let bind = this.testIsMultiRow(row);
-      if(bind)  {
-        let rowCount = this.getRowNumberByIndex(ds, +bind.ds)
+      const rowTotals: ExcelJS.Row | undefined = sheet.findRow(rowId+1);
+
+      //step 1 : нужно ли размножить строку ? если да - размножить
+      let isMulty = this.testIsMultiRow(row);
+
+      if(isMulty)  {
+        let bind = this.parseCellBinding(isMulty);
+        let rowCount = this.getRowNumberByIndex(ds, +bind.ds);
+
+        if(rowTotals)  {
+          this.replaceColumnsTotalsFormulas(rowTotals, rowId, rowCount);
+        }             
         this.insertEmptyRows(sheet, rowId, rowCount);
-        this.shiftFormulasAfterInsert(sheet, rowId, rowCount);  //test temp
       }
 
-      //2 привязать данные строки
+      //step 2 : привязать данные строки
       for (let colId = 1; colId <= row.cellCount; colId++) {
         const cell = row.getCell(colId);
 
-        //console.log('Cell ' + colNumber + ' = ' + cell.value);        
-        //cell format: #0.*.key,...	#0.*.1_1
+        //console.log('Cell ' + rowId +":"+ colId + ' ' + cell.value);        
+        //rowset BINDING - cell format: #0.*.key,...	#0.*.1_1
         if(cell && typeof cell.value == "string" && cell.value.startsWith(startSym)) {
           //{ds, id, key} 
           let bind = this.parseCellBinding(cell.value);
+          //select rowset row
           let dsKeyRow = this.getEntryByIndex(ds, +bind.ds, +bind.id);//map Entry [key, value]
 
-          if(bind.key == "key")  {
-            row.getCell(colId).value  = dsKeyRow != undefined ? dsKeyRow[0] : ""; //display "key" test temp
-          } else {
-
-            let fieldKey = bind.key;
-
-            if(dsKeyRow && dsKeyRow[1] && dsKeyRow[1][fieldKey]) {
-
-              let newVal = dsKeyRow[1][fieldKey].numberVal; //temp  numberVal  !
-
-              row.getCell(colId).value  = newVal; //dsKeys[i]
-            } else {
-              row.getCell(colId).value  = "";     //dsKeys[i]
-            }
-
-          }
+          this.setCellValue(bind, cell, dsKeyRow);
         }
-      }
+
+        //ENGLISCH text formula =SUM(**)
+        if(cell && typeof cell.value == "string" && cell.value.startsWith("="))  {
+          this.setCellFormulaValue(cell, rowId);  //ENG formula -> Excel formula
+        }
+
+      }//end columns for
 
     }
 
     //
+  }
+  
+  //replace ENG =formula -> Excel format
+  setCellFormulaValue(cell: ExcelJS.Cell, rowId: number) {
+    if(cell && typeof cell.value == "string" && cell.value.startsWith("="))  {
+        cell.value = cell.value.replaceAll("*", `${rowId}`);
+        //console.log(rowId, cell.value)
+        //  remove '='
+        cell.value = { formula: cell.value.substring(1), };//excel standart
+    }
+  }
+
+  setCellValue(bind: { ds: string; id: string; key: string; }, cell: ExcelJS.Cell, dsKeyRow: any[] | undefined) {
+    //dsKeyRow - map Entry (dataset row) [key, value]
+    if (bind.key == "key") {
+      //dsKeyRow[0] - Map key, [1] - Value
+      cell.value = dsKeyRow != undefined ? dsKeyRow[0] : ""; //display "key" test temp
+    } else {
+
+      let fieldKey = bind.key;
+      //dsKeyRow[0] - Map key, [1] - Value
+      if (dsKeyRow && dsKeyRow[1] && dsKeyRow[1][fieldKey]) {
+        //dsKeyRow[0] - Map key, [1] - Value
+        let newVal = dsKeyRow[1][fieldKey].numberVal; //temp  numberVal  !
+
+        cell.value = newVal; //dsKeys[i]
+      } else {
+        cell.value = "";
+      }
+    }
+
   }
 
   getEntryByIndex(arr: Map<string, any>[], dsId: number, rowId: number) {
@@ -157,25 +195,25 @@ export class TemplateService {
 
 
   //#0.*.key   replace rowId * with real dataset rowId
-  replaceDsRowId(row: ExcelJS.Row, dsRowId: number) {
+  replaceDsRowIdBindings(row: ExcelJS.Row, dsRowId: number) {
     for (let colId = 1; colId <= row.cellCount; colId++) {
       const cell = row.getCell(colId);
-      if(cell && typeof cell.value == "string") {
+      if(cell && typeof cell.value == "string" && cell.value.startsWith("#")) {
         cell.value = cell.value.replace("*", dsRowId.toString());
-        //console.log(dsRowId, cell.value)
+        //console.log(dsRowId, cell.value);
       }
     }
   }
+
   //#0.*.key
   testIsMultiRow(row: ExcelJS.Row) {
     for (let colId = 1; colId <= row.cellCount; colId++) {
       const cell = row.getCell(colId);  
-      if(cell && typeof cell.value == "string" && cell.value.includes("*")) {
-        let bind = this.parseCellBinding(cell.value);
-        return bind;
+      if(cell && typeof cell.value == "string" && cell.value.includes("*") && cell.value.startsWith("#")) {     
+        return cell.value;
       }
-      return null;
     }
+    return null;
   }
 
   setRowValues(row: ExcelJS.Row, data:any) {
@@ -195,11 +233,11 @@ export class TemplateService {
         sheet.spliceRows(pos, 0, []);
         this.copyValueAndRowStyle( oldRow, emptyRow); 
         //в старой строке подставить реальный номер строки датасета, но 1 самый последний!
-        this.replaceDsRowId(oldRow, num-id-1);
+        this.replaceDsRowIdBindings(oldRow, num-id-1);
     }
     //самая верхняя строка с 0 индексом
     const topRow = sheet.getRow(pos);
-    this.replaceDsRowId(topRow, 0);
+    this.replaceDsRowIdBindings(topRow, 0);
   }
 
   copyValueAndRowStyle(sourceRow: ExcelJS.Row, targetRow: ExcelJS.Row) {
@@ -217,39 +255,6 @@ export class TemplateService {
         //const buffer = await this.workbook.xlsx.writeBuffer();
         //saveAs(new Blob([buffer]), 'edited.xlsx');
   }
-  //schift A1:A2 -> A1:A100   englisch formulas start mit '='
-  shiftFormulasAfterInsert(sheet: ExcelJS.Worksheet, insertIndex: number, count = 1) {
-    
-    //   /[A-Z]{1,3}\d+:[A-Z]{1,3}\d+/g        // все A1:В100 диапазоны
-    const rangeRegex = /\$?[A-Z]{1,3}\$?\d+/g; // все A1-ссылки
-
-    for (let rowIndex = 1; rowIndex <= sheet.rowCount; rowIndex++) {
-      const r = sheet.getRow(rowIndex);
-      for (let colIndex = 1; colIndex <= r.cellCount; colIndex++) {
-        const cell = r.getCell(colIndex);
-        
-        //console.log("shift v:"+cell.value, "f:",cell.value); // excel  englisch formulas start mit '='
-
-        if (cell && cell.value && typeof cell.value === "string" && cell.value.startsWith("=")) {
-          //replace regex A1...-> A100
-          const newFormula = cell.value.replace(rangeRegex, ref => {
-            const { col, row } = this.parseCellRef(ref);
-            if (row > insertIndex) {
-              // Сдвигаем строки, но не трогаем колонки
-              return ref.replace(/\d+/, (row + count -2).toString());
-            }
-            let s = ref;
-            return s;
-          });
-          console.log(newFormula)//  remove '='
-          cell.value = {formula: newFormula.substring(1), };
-        }
-      }
-    }
-
-
-  }
-
   /*
   [..  "B1", // match[0] — полное совпадение
   "B",  // match[1] — буквы (колонка)
@@ -271,6 +276,25 @@ export class TemplateService {
             id:  parts[1],
             key: parts[2],
     }
+  }
+
+  replaceColumnsTotalsFormulas(sourceRow: ExcelJS.Row, fromRowId: number, rowwCount: number, ) {
+    for (let colId = 1; colId <= sourceRow.cellCount; colId++) {
+      const cell = sourceRow.getCell(colId);
+      if(cell && typeof cell.value == "string" && cell.value.startsWith("=")) {
+          let sub1 = cell.value.replace("*", "" + fromRowId);         // 1 *
+          let sub2 = sub1.replace("*", `${fromRowId + rowwCount-1}`); // 2 *
+          cell.value =  sub2;
+          //console.log(sub2);
+      }
+    }
+  }
+
+  isCellEngFormula(cell: ExcelJS.Cell)  {
+    if(cell && typeof cell.value == "string" && cell.value.startsWith("=")) {
+      return true;
+    }
+    return false;  
   }
 
 }
